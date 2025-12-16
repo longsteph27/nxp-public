@@ -1,6 +1,6 @@
 import { readItems } from '@directus/sdk'
 import directus from '../client'
-import { withRevalidate, safeApiCall } from '../utils'
+import { withRevalidate, safeApiCall, withNoCache } from '../utils'
 import type { Page } from '../types'
 import { getSite } from './sites'
 
@@ -52,7 +52,8 @@ const galleryItemFields = [
 
 const blockTeamFields = [
   '*',
-  { team: [
+  {
+    team: [
       '*',
       { image: ['*'] },
       { translations: ['bio', 'job_title', 'languages_code'] }
@@ -70,13 +71,18 @@ const blockTeamFields = [
 
 const blockItemFields = [
   '*',
-  { form: [
-    '*', 
-    { fields: [
+  {
+    form: [
       '*',
-      { translations: ['*'] }] },
-    { translations: ['*'] }] },
-  { team: [
+      {
+        fields: [
+          '*',
+          { translations: ['*'] }]
+      },
+      { translations: ['*'] }]
+  },
+  {
+    team: [
       '*',
       { image: ['*'] },
       { translations: ['bio', 'job_title', 'languages_code'] }
@@ -84,13 +90,16 @@ const blockItemFields = [
   },
   { translations: ['*', { faqs: ['*'] }] },
   { button_group: ['*', { buttons: ['*', { translations: ['*'] }] }] },
-  { rows: [
-    '*',
-    { image: ['*'] },
-    { translations: ['*'] }
-  ] },
+  {
+    rows: [
+      '*',
+      { image: ['*'] },
+      { translations: ['*'] }
+    ]
+  },
   { steps: ['*', { translations: ['*'] }] },
-  { testimonials: [
+  {
+    testimonials: [
       '*',
       { testimonials_id: ['*', { translations: ['*'] }] },
       { translations: ['*'] }
@@ -105,7 +114,7 @@ const blockItemFields = [
 
 const langMap = { 'vi': 'vi-VN', 'en': 'en-US' } as const;
 
-export const fetchPage = async (siteSlug: string, lang: string, permalink: string = '/') => {
+export const fetchPage = async (siteSlug: string, lang: string, permalink: string = '/', options: { disableCache?: boolean } = {}) => {
   const site = await getSite(siteSlug);
   if (!site) return null;
 
@@ -113,40 +122,74 @@ export const fetchPage = async (siteSlug: string, lang: string, permalink: strin
 
   return await safeApiCall(async () => {
     const pages = await directus.request(
-      withRevalidate(
-        readItems('pages' as any, {
-          filter: {
-            site_id: { _eq: site.id },
-            translations: { permalink: { _eq: permalink } },
-          },
-          fields: [
-            '*',
-            { translations: ['*'] },
-            { blocks: ['*', { item: blockItemFields }] },
-            { seo: ['*'] },
-            { site_id: ['*'] },
-          ],
-          deep: {
-            // TypeScript is too strict for Directus _filter syntax, so we cast as any for these nested filters
-            blocks: {
-              item: {
-                translations: { _filter: { languages_code: { _eq: langCode } } } as any,
-                form: {
+      options.disableCache
+        ? withNoCache(
+          readItems('pages' as any, {
+            filter: {
+              site_id: { _eq: site.id },
+              translations: { permalink: { _eq: permalink } },
+            },
+            fields: [
+              '*',
+              { translations: ['*'] },
+              { blocks: ['*', { item: blockItemFields }] },
+              { seo: ['*'] },
+              { site_id: ['*'] },
+            ],
+            deep: {
+              // TypeScript is too strict for Directus _filter syntax, so we cast as any for these nested filters
+              blocks: {
+                item: {
                   translations: { _filter: { languages_code: { _eq: langCode } } } as any,
-                  fields: {
+                  form: {
+                    translations: { _filter: { languages_code: { _eq: langCode } } } as any,
+                    fields: {
+                      translations: { _filter: { languages_code: { _eq: langCode } } } as any,
+                    },
+                  },
+                  rows: {
                     translations: { _filter: { languages_code: { _eq: langCode } } } as any,
                   },
                 },
-                rows: {
+              },
+            },
+            limit: 1,
+          })
+        )
+        : withRevalidate(
+          readItems('pages' as any, {
+            filter: {
+              site_id: { _eq: site.id },
+              translations: { permalink: { _eq: permalink } },
+            },
+            fields: [
+              '*',
+              { translations: ['*'] },
+              { blocks: ['*', { item: blockItemFields }] },
+              { seo: ['*'] },
+              { site_id: ['*'] },
+            ],
+            deep: {
+              // TypeScript is too strict for Directus _filter syntax, so we cast as any for these nested filters
+              blocks: {
+                item: {
                   translations: { _filter: { languages_code: { _eq: langCode } } } as any,
+                  form: {
+                    translations: { _filter: { languages_code: { _eq: langCode } } } as any,
+                    fields: {
+                      translations: { _filter: { languages_code: { _eq: langCode } } } as any,
+                    },
+                  },
+                  rows: {
+                    translations: { _filter: { languages_code: { _eq: langCode } } } as any,
+                  },
                 },
               },
             },
-          },
-          limit: 1,
-        }),
-        60
-      )
+            limit: 1,
+          }),
+          60
+        )
     ) as any[];
 
     if (!pages[0]) return null;
