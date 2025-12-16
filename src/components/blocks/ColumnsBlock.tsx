@@ -59,7 +59,7 @@ function ColumnsBlock({ data, lang }: ColumnsBlockProps) {
       {title && <TypographyTitle
         className='text-[var(--color-gray)] font-[var(--font-display) ] font-semibold'
       >{title}</TypographyTitle>}
-      {headline && <TypographyHeadline 
+      {headline && <TypographyHeadline
         className='text-[var(--color-primary)] font-[var(--font-display) ] font-semibold'
         size='xl'
         content={headline} />}
@@ -85,14 +85,14 @@ function ColumnsBlock({ data, lang }: ColumnsBlockProps) {
                         >{rowTitle}</TypographyTitle>
                       )}
                       {rowHeadline && (
-                        <TypographyHeadline 
-                        className='text-[var(--color-primary)] font-[var(--font-display) ] font-semibold'
-                        size='xl'
-                        content={rowHeadline} />
+                        <TypographyHeadline
+                          className='text-[var(--color-primary)] font-[var(--font-display) ] font-semibold'
+                          size='xl'
+                          content={rowHeadline} />
                       )}
                       {rowContent && (
                         <TypographyProse
-                        
+
                           content={rowContent}
                           className='mt-4 font-[var(--font-body)]'
                         />
@@ -101,11 +101,10 @@ function ColumnsBlock({ data, lang }: ColumnsBlockProps) {
                   </div>
                 </div>
                 <div
-                  className={`order-first mt-12 block aspect-square w-full border-2 border-[var(--color-primary)] p-2  lg:mt-0 ${
-                    row.image_position === 'right'
+                  className={`order-first mt-12 block aspect-square w-full border-2 border-[var(--color-primary)] p-2  lg:mt-0 ${row.image_position === 'right'
                       ? 'rounded-xl lg:order-last'
                       : 'rounded-xl lg:order-first'
-                  }`}
+                    }`}
                 >
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8, y: 50 }}
@@ -120,17 +119,16 @@ function ColumnsBlock({ data, lang }: ColumnsBlockProps) {
                       },
                     }}
                   >
-                    <div className={`mx-auto h-full w-full bg-gray-100 object-cover object-center lg:ml-auto ${
-                      row.image_position === 'right'
+                    <div className={`mx-auto h-full w-full bg-gray-100 object-cover object-center lg:ml-auto ${row.image_position === 'right'
                         ? 'rounded-bl-2xl rounded-tr-2xl'
                         : 'rounded-br-2xl rounded-tl-2xl'
-                    }`}>
+                      }`}>
                       {row.image && (
                         <Image
                           width={800}
                           height={800}
                           alt=''
-                          src={getDirectusMedia(row.image?.id)}
+                          src={getDirectusMedia(typeof row.image === 'string' ? row.image : row.image?.id)}
                         />
                       )}
                     </div>
