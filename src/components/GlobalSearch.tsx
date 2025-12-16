@@ -9,6 +9,7 @@ import { truncateString } from '@/lib/utils/strings'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
 import { useRouter } from '@/lib/navigation'
+import { useSearch } from '@/hooks/useSearch'
 
 type CollectionType =
   | 'posts'
@@ -29,48 +30,26 @@ export default function GlobalSearch({
   className,
 }: GlobalSearchProps) {
   const [query, setQuery] = useState<string>('')
-  const [results, setResults] = useState<Array<any>>([])
   const [selected, setSelected] = useState<any>(null)
-  const [loading, setLoading] = useState<boolean>(false)
   const router = useRouter()
-
   const { t } = useTranslation()
 
-  const [, cancelSearch] = useDebounce(
+  // Debounce query update instead of search call
+  const [debouncedQuery, setDebouncedQuery] = useState('')
+
+  useDebounce(
     () => {
-      search()
+      setDebouncedQuery(query)
     },
     500,
     [query]
   )
 
-  const search = async () => {
-    setLoading(true)
-    try {
-      const encodedCollections = collections
-        .map((collection) => encodeURIComponent(collection))
-        .join(',')
-
-      const queryString = qs.stringify(
-        {
-          search: query,
-          collections: encodedCollections,
-        },
-        { encode: false }
-      )
-      const response = await fetch(`/api/search?${queryString}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const data = await response.json()
-      setResults(data)
-    } catch (error) {
-      console.log(error)
-    }
-    setLoading(false)
-  }
+  const { data: results = [], isLoading: loading } = useSearch({
+    query: debouncedQuery,
+    collections,
+    enabled: debouncedQuery.length > 0
+  })
 
   useEffect(() => {
     if (selected) {
@@ -106,13 +85,12 @@ export default function GlobalSearch({
                 <span className='loading loading-spinner text-warning'></span>
               </div>
             )}
-            {results.map((hit) => (
+            {results.map((hit: any) => (
               <Combobox.Option key={hit.id} value={hit}>
                 {({ active, selected }) => (
                   <li
-                    className={`${
-                      active ? 'bg-accent' : ''
-                    } relative flex w-full cursor-pointer items-start space-x-3 overflow-hidden rounded-bl rounded-tr p-2 text-left`}
+                    className={`${active ? 'bg-accent' : ''
+                      } relative flex w-full cursor-pointer items-start space-x-3 overflow-hidden rounded-bl rounded-tr p-2 text-left`}
                   >
                     {hit.image ? (
                       <Image
