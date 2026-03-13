@@ -57,7 +57,7 @@ export const safeApiCall = async <T>(
       console.warn(`[Directus API] Server not available for ${operationName}, returning fallback`)
       return fallback
     }
-
+    
     return await apiCall()
   } catch (error) {
     console.error(`[Directus API] ${operationName} failed:`, error)

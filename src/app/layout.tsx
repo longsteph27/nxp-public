@@ -3,12 +3,12 @@ import React from 'react';
 import { Inter, Poppins, Fira_Code } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-body' });
-const poppins = Poppins({
+const poppins = Poppins({ 
   weight: ['400', '500', '600', '700'],
   subsets: ['latin'],
   variable: '--font-display'
 });
-const firaCode = Fira_Code({
+const firaCode = Fira_Code({ 
   subsets: ['latin'],
   variable: '--font-code'
 });

@@ -52,8 +52,7 @@ const galleryItemFields = [
 
 const blockTeamFields = [
   '*',
-  {
-    team: [
+  { team: [
       '*',
       { image: ['*'] },
       { translations: ['bio', 'job_title', 'languages_code'] }
@@ -71,18 +70,13 @@ const blockTeamFields = [
 
 const blockItemFields = [
   '*',
-  {
-    form: [
+  { form: [
+    '*', 
+    { fields: [
       '*',
-      {
-        fields: [
-          '*',
-          { translations: ['*'] }]
-      },
-      { translations: ['*'] }]
-  },
-  {
-    team: [
+      { translations: ['*'] }] },
+    { translations: ['*'] }] },
+  { team: [
       '*',
       { image: ['*'] },
       { translations: ['bio', 'job_title', 'languages_code'] }
@@ -90,16 +84,13 @@ const blockItemFields = [
   },
   { translations: ['*', { faqs: ['*'] }] },
   { button_group: ['*', { buttons: ['*', { translations: ['*'] }] }] },
-  {
-    rows: [
-      '*',
-      { image: ['*'] },
-      { translations: ['*'] }
-    ]
-  },
+  { rows: [
+    '*',
+    { image: ['*'] },
+    { translations: ['*'] }
+  ] },
   { steps: ['*', { translations: ['*'] }] },
-  {
-    testimonials: [
+  { testimonials: [
       '*',
       { testimonials_id: ['*', { translations: ['*'] }] },
       { translations: ['*'] }

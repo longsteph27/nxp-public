@@ -58,10 +58,10 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
   // If no slug or slug is empty array, fetch homepage (permalink: "/")
   // If slug is ['nexpo'], also fetch homepage
   const pageSlug = !slug || slug.length === 0 || (slug.length === 1 && slug[0] === site) ? '/' : `/${slug.join('/')}`;
-
+  
   console.log('\n=== Page Fetch Debug ===');
   console.log('Page Slug:', pageSlug);
-
+  
   const pageContent = await fetchPage(site, lang, pageSlug) as (Page & {
     translations: Array<{
       languages_code: string;

@@ -26,7 +26,7 @@ export const getSite = async (siteSlug: string): Promise<Sites | null> => {
               _eq: siteSlug
             }
           },
-          fields: ['*', 'navigation.type'],
+          fields: ['*','navigation.type'],
           limit: 1
         }),
         60
@@ -111,7 +111,7 @@ export const getSiteByDomain = async (domain: string): Promise<Sites | null> => 
           fields: ['*'],
           limit: 1
         }),
-        0
+        60
       )
     ) as Sites[];
 

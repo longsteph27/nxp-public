@@ -110,8 +110,9 @@ export default function GlobalSearch({
               <Combobox.Option key={hit.id} value={hit}>
                 {({ active, selected }) => (
                   <li
-                    className={`${active ? 'bg-accent' : ''
-                      } relative flex w-full cursor-pointer items-start space-x-3 overflow-hidden rounded-bl rounded-tr p-2 text-left`}
+                    className={`${
+                      active ? 'bg-accent' : ''
+                    } relative flex w-full cursor-pointer items-start space-x-3 overflow-hidden rounded-bl rounded-tr p-2 text-left`}
                   >
                     {hit.image ? (
                       <Image
