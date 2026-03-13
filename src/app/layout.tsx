@@ -13,8 +13,6 @@ const firaCode = Fira_Code({
   variable: '--font-code'
 });
 
-import QueryProvider from '@/components/providers/QueryProvider';
-
 export const metadata = {
   title: 'Nexpo',
   description: 'Nexpo Event Platform',
@@ -25,9 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head />
       <body className={`${inter.variable} ${poppins.variable} ${firaCode.variable}`}>
-        <QueryProvider>
-          {children}
-        </QueryProvider>
+        {children}
       </body>
     </html>
   );

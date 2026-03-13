@@ -25,18 +25,6 @@ export const withRevalidate = <Schema extends object, Output>(
   }
 }
 
-export const withNoCache = <Schema extends object, Output>(
-  getOptions: RestCommand<Output, Schema>
-): RestCommand<Output, Schema> => {
-  return () => {
-    const options = getOptions()
-    options.onRequest = (options: RequestInit) => {
-      return { ...options, cache: 'no-store', next: { revalidate: 0 } }
-    }
-    return options
-  }
-}
-
 // Check if we're in a development environment where Directus might not be available
 export const isDirectusAvailable = async (): Promise<boolean> => {
   // Check if fallback data is enabled - if so, skip Directus connection attempt

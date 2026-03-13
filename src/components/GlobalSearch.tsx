@@ -9,7 +9,6 @@ import { truncateString } from '@/lib/utils/strings'
 import { useTranslation } from 'react-i18next'
 import Image from 'next/image'
 import { useRouter } from '@/lib/navigation'
-import { useSearch } from '@/hooks/useSearch'
 
 type CollectionType =
   | 'posts'
@@ -30,26 +29,48 @@ export default function GlobalSearch({
   className,
 }: GlobalSearchProps) {
   const [query, setQuery] = useState<string>('')
+  const [results, setResults] = useState<Array<any>>([])
   const [selected, setSelected] = useState<any>(null)
+  const [loading, setLoading] = useState<boolean>(false)
   const router = useRouter()
+
   const { t } = useTranslation()
 
-  // Debounce query update instead of search call
-  const [debouncedQuery, setDebouncedQuery] = useState('')
-
-  useDebounce(
+  const [, cancelSearch] = useDebounce(
     () => {
-      setDebouncedQuery(query)
+      search()
     },
     500,
     [query]
   )
 
-  const { data: results = [], isLoading: loading } = useSearch({
-    query: debouncedQuery,
-    collections,
-    enabled: debouncedQuery.length > 0
-  })
+  const search = async () => {
+    setLoading(true)
+    try {
+      const encodedCollections = collections
+        .map((collection) => encodeURIComponent(collection))
+        .join(',')
+
+      const queryString = qs.stringify(
+        {
+          search: query,
+          collections: encodedCollections,
+        },
+        { encode: false }
+      )
+      const response = await fetch(`/api/search?${queryString}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const data = await response.json()
+      setResults(data)
+    } catch (error) {
+      console.log(error)
+    }
+    setLoading(false)
+  }
 
   useEffect(() => {
     if (selected) {
@@ -85,7 +106,7 @@ export default function GlobalSearch({
                 <span className='loading loading-spinner text-warning'></span>
               </div>
             )}
-            {results.map((hit: any) => (
+            {results.map((hit) => (
               <Combobox.Option key={hit.id} value={hit}>
                 {({ active, selected }) => (
                   <li
